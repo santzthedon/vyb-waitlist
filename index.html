@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Vyb — where's good tonight?</title>
+<meta name="description" content="Vyb finds the best clubs, food and arcades near you — with student deals and XP for exploring. Launching for Freshers' Week 2026. Join the waitlist.">
+<meta property="og:title" content="Vyb — where's good tonight?">
+<meta property="og:description" content="Clubs, food and arcades with student deals. Earn XP for exploring London. Join the waitlist for Freshers' 2026.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='22' fill='%230D0B14'/><text x='50' y='72' font-size='60' font-family='Arial Black,sans-serif' font-weight='900' fill='%23C6FF3E' text-anchor='middle'>V</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Unbounded:wght@700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0D0B14;
+    --surface: #16121F;
+    --lime: #C6FF3E;
+    --violet: #9B5CFF;
+    --pink: #FF4FA3;
+    --cyan: #2DE2E6;
+    --text: #FFFFFF;
+    --subtext: #C9C9D4;
+    --muted: #8A8A96;
+    --border: #2C2440;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Space Grotesk", system-ui, sans-serif;
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-x: hidden;
+  }
+  .glow {
+    position: fixed;
+    width: 60vmax; height: 60vmax;
+    border-radius: 50%;
+    filter: blur(90px);
+    opacity: .16;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .glow.lime   { background: var(--lime);   top: -30vmax; right: -20vmax; }
+  .glow.violet { background: var(--violet); bottom: -30vmax; left: -25vmax; }
+  main {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 30rem;
+    padding: 3.5rem 1.5rem 4rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .wordmark {
+    font-family: "Unbounded", sans-serif;
+    font-weight: 900;
+    font-size: 2rem;
+    letter-spacing: .04em;
+    color: var(--lime);
+    text-shadow: 0 0 24px rgba(198,255,62,.45);
+  }
+  .badge {
+    margin-top: 2.6rem;
+    font-size: .8rem;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--pink);
+    border: 1px solid var(--border);
+    background: var(--surface);
+    border-radius: 999px;
+    padding: .45rem 1rem;
+  }
+  h1 {
+    font-family: "Unbounded", sans-serif;
+    font-weight: 700;
+    font-size: clamp(1.7rem, 7vw, 2.5rem);
+    line-height: 1.15;
+    margin-top: 1.1rem;
+  }
+  h1 .hl { color: var(--lime); }
+  .sub {
+    color: var(--subtext);
+    font-size: 1.05rem;
+    line-height: 1.55;
+    margin-top: 1rem;
+    max-width: 26rem;
+  }
+  .pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+    justify-content: center;
+    margin-top: 1.4rem;
+  }
+  .pill {
+    font-size: .85rem;
+    font-weight: 500;
+    border-radius: 999px;
+    padding: .4rem .85rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--subtext);
+  }
+  .pill b { font-weight: 700; }
+  .pill.clubs b  { color: var(--lime); }
+  .pill.food b   { color: var(--violet); }
+  .pill.arcade b { color: var(--pink); }
+  .pill.deals b  { color: var(--cyan); }
+  form {
+    width: 100%;
+    margin-top: 2.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: .75rem;
+  }
+  input {
+    width: 100%;
+    font: inherit;
+    font-size: 1rem;
+    color: var(--text);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: .95rem 1.1rem;
+    outline: none;
+    transition: border-color .15s;
+  }
+  input::placeholder { color: var(--muted); }
+  input:focus { border-color: var(--lime); }
+  button {
+    font-family: "Unbounded", sans-serif;
+    font-weight: 700;
+    font-size: 1rem;
+    color: var(--bg);
+    background: var(--lime);
+    border: none;
+    border-radius: 14px;
+    padding: 1rem;
+    cursor: pointer;
+    box-shadow: 0 0 28px rgba(198,255,62,.35);
+    transition: transform .12s, opacity .15s;
+  }
+  button:active { transform: scale(.98); }
+  button:disabled { opacity: .6; cursor: wait; }
+  .note { color: var(--muted); font-size: .8rem; margin-top: .9rem; }
+  .error {
+    display: none;
+    color: var(--pink);
+    font-size: .9rem;
+    margin-top: .75rem;
+  }
+  /* success card */
+  #success {
+    display: none;
+    width: 100%;
+    margin-top: 2.2rem;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 1.8rem 1.4rem;
+  }
+  #success .you-are { color: var(--subtext); font-size: .95rem; }
+  #success .position {
+    font-family: "Unbounded", sans-serif;
+    font-weight: 900;
+    font-size: 3rem;
+    color: var(--lime);
+    text-shadow: 0 0 24px rgba(198,255,62,.4);
+    margin: .3rem 0 .6rem;
+  }
+  #success .move-up { color: var(--subtext); font-size: .95rem; line-height: 1.5; }
+  #success .move-up b { color: var(--pink); }
+  .share-row {
+    display: flex;
+    gap: .6rem;
+    margin-top: 1.2rem;
+  }
+  .share-row a, .share-row button {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: "Space Grotesk", sans-serif;
+    font-weight: 700;
+    font-size: .95rem;
+    border-radius: 12px;
+    padding: .85rem .5rem;
+    text-decoration: none;
+    box-shadow: none;
+  }
+  .share-row .wa { background: var(--lime); color: var(--bg); }
+  .share-row .copy {
+    background: transparent;
+    color: var(--text);
+    border: 1px solid var(--border);
+  }
+  footer {
+    position: relative;
+    z-index: 1;
+    color: var(--muted);
+    font-size: .8rem;
+    padding: 0 1.5rem 2.2rem;
+    text-align: center;
+  }
+</style>
+</head>
+<body>
+  <div class="glow lime"></div>
+  <div class="glow violet"></div>
+  <main>
+    <div class="wordmark">VYB</div>
+    <div class="badge">Freshers’ 2026 · London</div>
+    <h1>Where’s good <span class="hl">tonight</span>?</h1>
+    <p class="sub">Vyb finds the clubs, late-night food and arcades actually worth leaving halls for — with real student deals and prices up front. Earn XP every time you explore somewhere new.</p>
+    <div class="pills">
+      <span class="pill clubs"><b>●</b> Clubs &amp; bars</span>
+      <span class="pill food"><b>●</b> Late-night food</span>
+      <span class="pill arcade"><b>●</b> Arcades</span>
+      <span class="pill deals"><b>●</b> Student deals</span>
+    </div>
+
+    <form id="waitlist-form" novalidate>
+      <input type="email" id="email" name="email" placeholder="uni or personal email" autocomplete="email" required>
+      <input type="text" id="university" name="university" placeholder="your uni (e.g. UCL)" autocomplete="organization" list="unis">
+      <datalist id="unis">
+        <option value="UCL"><option value="King's College London"><option value="Imperial College London">
+        <option value="LSE"><option value="Queen Mary University of London"><option value="City, University of London">
+        <option value="University of Westminster"><option value="Goldsmiths"><option value="University of the Arts London">
+        <option value="University of Greenwich"><option value="London Met"><option value="Kingston University">
+        <option value="Middlesex University"><option value="Brunel University"><option value="University of East London">
+        <option value="Roehampton"><option value="St George's"><option value="Royal Holloway">
+      </datalist>
+      <button type="submit" id="join-btn">Join the waitlist</button>
+      <p class="error" id="error-msg"></p>
+    </form>
+    <p class="note">Free forever for students. No spam — one email when we launch.</p>
+
+    <div id="success">
+      <div class="you-are">You’re in. Your spot:</div>
+      <div class="position" id="position">#—</div>
+      <p class="move-up">Skip the queue: every mate who joins with your link <b>moves you up</b>.</p>
+      <div class="share-row">
+        <a class="wa" id="wa-share" href="#" target="_blank" rel="noopener">Share on WhatsApp</a>
+        <button class="copy" id="copy-link" type="button">Copy link</button>
+      </div>
+    </div>
+  </main>
+  <footer>© 2026 Vyb · London, UK</footer>
+
+<script>
+  // Set this to the numeric ID from the GetWaitlist dashboard once the waitlist is created.
+  var WAITLIST_ID = null;
+
+  var form = document.getElementById("waitlist-form");
+  var btn = document.getElementById("join-btn");
+  var errorMsg = document.getElementById("error-msg");
+  var successCard = document.getElementById("success");
+
+  function showError(msg) {
+    errorMsg.textContent = msg;
+    errorMsg.style.display = "block";
+  }
+
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    errorMsg.style.display = "none";
+
+    var email = document.getElementById("email").value.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      showError("That email doesn’t look right — try again?");
+      return;
+    }
+    if (!WAITLIST_ID) {
+      showError("The waitlist opens very soon — follow @vyb on TikTok so you don’t miss it.");
+      return;
+    }
+
+    var params = new URLSearchParams(location.search);
+    btn.disabled = true;
+    btn.textContent = "Joining…";
+
+    fetch("https://api.getwaitlist.com/api/v1/signup", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: email,
+        waitlist_id: WAITLIST_ID,
+        referral_link: document.URL,
+        metadata: {
+          university: document.getElementById("university").value.trim() || "unknown",
+          src: params.get("src") || "direct"
+        }
+      })
+    })
+      .then(function (res) {
+        if (!res.ok) throw new Error("HTTP " + res.status);
+        return res.json();
+      })
+      .then(function (data) {
+        form.style.display = "none";
+        document.querySelector(".note").style.display = "none";
+        document.getElementById("position").textContent =
+          "#" + (data.priority != null ? data.priority : "?");
+        var myLink = location.origin + location.pathname + "?ref_id=" + (data.referral_token || "");
+        var waText = encodeURIComponent(
+          "found the app for freshers — clubs, food + student deals in London. join the waitlist with my link: " + myLink
+        );
+        document.getElementById("wa-share").href = "https://wa.me/?text=" + waText;
+        document.getElementById("copy-link").addEventListener("click", function () {
+          navigator.clipboard.writeText(myLink).then(function () {
+            document.getElementById("copy-link").textContent = "Copied!";
+          });
+        });
+        successCard.style.display = "block";
+        successCard.scrollIntoView({ behavior: "smooth", block: "center" });
+      })
+      .catch(function () {
+        btn.disabled = false;
+        btn.textContent = "Join the waitlist";
+        showError("Something went wrong — give it another go in a sec.");
+      });
+  });
+</script>
+</body>
+</html>
