@@ -211,6 +211,14 @@
     padding: 0 1.5rem 2.2rem;
     text-align: center;
   }
+  .ig-link {
+    display: inline-block;
+    color: var(--cyan);
+    font-weight: 700;
+    text-decoration: none;
+    margin-bottom: .5rem;
+  }
+  .ig-link:hover { text-decoration: underline; }
 </style>
 </head>
 <body>
@@ -254,7 +262,10 @@
       </div>
     </div>
   </main>
-  <footer>© 2026 Vyb · London, UK</footer>
+  <footer>
+    <a class="ig-link" href="https://instagram.com/join.vyb" target="_blank" rel="noopener">Follow the build → @join.vyb</a><br>
+    © 2026 Vyb · London, UK
+  </footer>
 
 <script>
   // Set this to the numeric ID from the GetWaitlist dashboard once the waitlist is created.
@@ -280,7 +291,7 @@
       return;
     }
     if (!WAITLIST_ID) {
-      showError("The waitlist opens very soon — follow @vyb on TikTok so you don’t miss it.");
+      showError("The waitlist opens very soon — follow @join.vyb on Instagram so you don’t miss it.");
       return;
     }
 
