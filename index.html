@@ -17,8 +17,25 @@
     --bg: #0D0B14;
     --ink: #FFFFFF;
     --accent: #C6FF3E;
+    --on-accent: #0D0B14;
     --muted: rgba(255,255,255,.55);
     --line: rgba(255,255,255,.14);
+    --phone-shadow: rgba(0,0,0,.6);
+    --phone-rim: rgba(255,255,255,.22);
+    --phone-bezel: #1a1724;
+    --header-bg: rgba(13,11,20,.85);
+  }
+  [data-theme="light"] {
+    --bg: #FFF6E8;
+    --ink: #1B1B1B;
+    --accent: #FF5C1F;
+    --on-accent: #FFFFFF;
+    --muted: #9C8B72;
+    --line: rgba(27,27,27,.16);
+    --phone-shadow: rgba(27,27,27,.25);
+    --phone-rim: rgba(27,27,27,.35);
+    --phone-bezel: #1B1B1B;
+    --header-bg: rgba(255,246,232,.88);
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
@@ -28,6 +45,7 @@
     font-family: "Archivo", system-ui, sans-serif;
     font-weight: 500;
     overflow-x: hidden;
+    transition: background .25s, color .25s;
   }
   header {
     position: fixed;
@@ -37,10 +55,26 @@
     justify-content: space-between;
     align-items: center;
     padding: 1.1rem 1.5rem;
-    background: rgba(13,11,20,.85);
+    background: var(--header-bg);
     backdrop-filter: blur(12px);
     border-bottom: 1px solid var(--line);
   }
+  .header-right { display: flex; align-items: center; gap: .6rem; }
+  .theme-toggle {
+    font: inherit;
+    font-size: .7rem;
+    font-weight: 600;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--ink);
+    background: none;
+    border: 1px solid var(--line);
+    padding: .5rem .8rem;
+    cursor: pointer;
+    margin: 0;
+    width: auto;
+  }
+  .theme-toggle:hover { border-color: var(--ink); opacity: 1; }
   .wordmark {
     font-family: "Archivo Black", sans-serif;
     font-size: 1.1rem;
@@ -51,7 +85,7 @@
     font-weight: 600;
     letter-spacing: .14em;
     text-transform: uppercase;
-    color: var(--bg);
+    color: var(--on-accent);
     background: var(--accent);
     padding: .55rem .9rem;
     text-decoration: none;
@@ -106,12 +140,12 @@
   .phone {
     width: min(72vw, 320px);
     border-radius: 2.6rem;
-    border: 1px solid rgba(255,255,255,.22);
-    outline: 6px solid #1a1724;
+    border: 1px solid var(--phone-rim);
+    outline: 6px solid var(--phone-bezel);
     overflow: hidden;
     transform-origin: center center;
     will-change: transform;
-    box-shadow: 0 40px 120px rgba(0,0,0,.6);
+    box-shadow: 0 40px 120px var(--phone-shadow);
   }
   .phone img { display: block; width: 100%; height: auto; }
   .zoom-caption {
@@ -207,7 +241,7 @@
     font-size: .85rem;
     letter-spacing: .14em;
     text-transform: uppercase;
-    color: var(--bg);
+    color: var(--on-accent);
     background: var(--accent);
     border: none;
     padding: 1.05rem;
@@ -248,7 +282,7 @@
     text-decoration: none;
     cursor: pointer;
   }
-  .share-row .wa { background: var(--accent); color: var(--bg); border: 1px solid var(--accent); }
+  .share-row .wa { background: var(--accent); color: var(--on-accent); border: 1px solid var(--accent); }
   .share-row .copy { background: none; color: var(--ink); border: 1px solid var(--line); }
 
   footer {
@@ -278,7 +312,10 @@
 <body>
   <header>
     <div class="wordmark">VYB</div>
-    <a class="header-cta" href="#join">Join the waitlist</a>
+    <div class="header-right">
+      <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch colour theme">Light</button>
+      <a class="header-cta" href="#join">Join the waitlist</a>
+    </div>
   </header>
 
   <section class="hero">
@@ -293,7 +330,7 @@
   <section class="zoom-stage" id="zoom-stage">
     <div class="zoom-sticky">
       <div class="phone" id="zoom-phone">
-        <img src="assets/07-discover-zoom.png" alt="Vyb Discover map of Shoreditch with named venue pins" loading="lazy">
+        <img src="assets/07-discover-zoom.png" data-dark="assets/07-discover-zoom.png" data-light="assets/08-discover-day.png" alt="Vyb Discover map of Shoreditch with named venue pins" loading="lazy">
       </div>
       <p class="zoom-caption" id="zoom-caption">The whole city, one map</p>
     </div>
@@ -302,7 +339,7 @@
   <section class="features">
     <div class="inner">
       <div class="feature">
-        <div class="feature-media"><div class="phone"><img src="assets/04-detail.png" alt="Cargo venue detail with hours, last entry and cover charge" loading="lazy"></div></div>
+        <div class="feature-media"><div class="phone"><img src="assets/04-detail.png" data-dark="assets/04-detail.png" data-light="assets/09-detail-day.png" alt="Cargo venue detail with hours, last entry and cover charge" loading="lazy"></div></div>
         <div class="feature-copy">
           <p class="f-num">01 — No guesswork</p>
           <h2>Know before you go</h2>
@@ -362,6 +399,27 @@
   </footer>
 
 <script>
+  // Theme toggle: mirrors the app's night (default) / day modes.
+  (function () {
+    var root = document.documentElement;
+    var btn = document.getElementById("theme-toggle");
+    function apply(mode) {
+      if (mode === "light") root.setAttribute("data-theme", "light");
+      else root.removeAttribute("data-theme");
+      btn.textContent = mode === "light" ? "Dark" : "Light";
+      document.querySelectorAll("img[data-dark]").forEach(function (img) {
+        img.src = mode === "light" ? img.dataset.light : img.dataset.dark;
+      });
+      try { localStorage.setItem("vyb-theme", mode); } catch (e) {}
+    }
+    var saved = null;
+    try { saved = localStorage.getItem("vyb-theme"); } catch (e) {}
+    if (saved === "light") apply("light");
+    btn.addEventListener("click", function () {
+      apply(root.getAttribute("data-theme") === "light" ? "dark" : "light");
+    });
+  })();
+
   // Sticky phone zoom: scale/settle the phone as the stage scrolls through.
   (function () {
     var stage = document.getElementById("zoom-stage");
